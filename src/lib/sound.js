@@ -3,7 +3,7 @@ const BGM_SOURCES = {
   editor: 'dark.mp3',
 };
 
-const BGM_VOLUME = 0.35;
+const BGM_VOLUME = 0.6;
 const FADE_MS = 3000;
 
 function resolveBgmUrl(filename) {
