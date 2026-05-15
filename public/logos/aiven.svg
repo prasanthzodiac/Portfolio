@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="aivenOrb" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF5500"/>
+      <stop offset="55%" stop-color="#FF7700"/>
+      <stop offset="100%" stop-color="#FFAA66"/>
+    </linearGradient>
+  </defs>
+  <circle cx="42" cy="74" r="26" fill="url(#aivenOrb)"/>
+  <circle cx="88" cy="48" r="30" fill="#FF9933" opacity="0.95"/>
+  <circle cx="86" cy="90" r="20" fill="#FF7700" opacity="0.92"/>
+</svg>

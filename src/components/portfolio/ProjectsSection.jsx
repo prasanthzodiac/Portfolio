@@ -1,303 +1,133 @@
 import React, { useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Github, Zap, GraduationCap, Diamond, X, ArrowUpRight } from 'lucide-react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { ExternalLink, Github, X, ArrowRight } from 'lucide-react';
 
 const PROJECTS = [
   {
     id: 1,
-    title: 'College Management System',
+    title: 'COLLEGE MANAGEMENT SYSTEM',
     subtitle: 'Academic Intelligence Platform',
     description:
       'A comprehensive end-to-end academic management ecosystem — handling student records, real-time attendance, grade analytics, faculty dashboards, and role-based access control. Built to scale across departments with a clean, intuitive interface that redefines how institutions manage knowledge.',
-    tech: ['Java', 'Spring Boot', 'MySQL', 'React', 'REST API', 'JWT'],
-    color: '#FFB347',
-    accentColor: '#F5C842',
-    year: '2024',
-    category: 'Full Stack',
-    icon: GraduationCap,
+    tech: ['Java', 'Spring Boot', 'MySQL', 'React', 'REST API'],
+    year: '2025',
+    category: 'FULL STACK',
     stats: [
       { label: 'Modules', value: '12+' },
-      { label: 'Role Levels', value: '4' },
+      { label: 'Roles', value: '4' },
       { label: 'Stack', value: 'Full' },
     ],
-    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&q=80',
-    github: 'https://github.com/prasanthzodiac',
-    demo: 'https://github.com/prasanthzodiac',
+    image: '/banners/college-management-system.png',
+    github: 'https://github.com/prasanthzodiac/College-Management-System-CMS-',
+    demo: 'https://college-management-system-cms-gamma.vercel.app/',
   },
   {
     id: 2,
-    title: 'Company Intelligence AI',
+    title: 'COMPANY INTELLIGENCE AI',
     subtitle: 'AI-Powered Business Insights',
     description:
       'An intelligent business analytics engine that transforms raw company data into actionable insights. Leverages machine learning models to predict trends, visualize KPIs with interactive dashboards, and generate executive-level reports — turning data noise into competitive intelligence.',
-    tech: ['Python', 'React', 'Node.js', 'ML Models', 'REST API', 'MySQL'],
-    color: '#C084FC',
-    accentColor: '#A855F7',
+    tech: ['Python', 'React', 'Node.js', 'ML Models', 'MySQL'],
     year: '2025',
     category: 'AI / ML',
-    icon: Zap,
     stats: [
       { label: 'Data Points', value: '50K+' },
       { label: 'AI Models', value: '3' },
-      { label: 'Dashboards', value: '8' },
+      { label: 'Views', value: '8' },
     ],
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80',
-    github: 'https://github.com/prasanthzodiac',
-    demo: 'https://github.com/prasanthzodiac',
+    image: '/banners/company-intelligence-ai.png',
+    github: 'https://github.com/prasanthzodiac/Company-Intelligence-AI---Infynd-Hackathon',
+    demo: 'https://company-intelligence-ai-infynd-hack.vercel.app/#upload',
   },
   {
     id: 3,
-    title: 'Valorae',
+    title: 'VALORAE',
     subtitle: 'Limited Authenticated Collectibles',
     description:
       'A blockchain-inspired platform for limited authenticated digital collectibles and exclusive fan ownership experiences. Fans can acquire, trade, and authenticate rare digital items — merging scarcity, identity, and fandom into a seamless ownership economy with real-time rarity tracking.',
-    tech: ['React', 'Node.js', 'Web3', 'REST API', 'JWT', 'MySQL'],
-    color: '#FF6B6B',
-    accentColor: '#FF8E53',
-    year: '2025',
-    category: 'Web3 / Fan Tech',
-    icon: Diamond,
+    tech: ['React', 'Node.js', 'Web3', 'REST API', 'MySQL'],
+    year: '2026',
+    category: 'WEB3',
     stats: [
-      { label: 'Collectibles', value: 'Limited' },
-      { label: 'Auth Layer', value: 'On-chain' },
-      { label: 'Ownership', value: 'Exclusive' },
+      { label: 'Items', value: 'Limited' },
+      { label: 'Auth', value: 'On-chain' },
+      { label: 'Access', value: 'Exclusive' },
     ],
-    image: 'https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=1200&q=80',
-    github: 'https://github.com/prasanthzodiac',
-    demo: 'https://github.com/prasanthzodiac',
+    image: '/banners/valorae.png',
+    github: 'https://github.com/prasanthzodiac/Valorae',
+    demo: 'https://valorae.vercel.app/',
   },
 ];
 
 function ProjectModal({ project, onClose }) {
   if (!project) return null;
-  const Icon = project.icon;
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-      style={{ background: 'rgba(8,6,14,0.92)', backdropFilter: 'blur(16px)' }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8"
+      style={{ background: 'rgba(2,4,10,0.95)', backdropFilter: 'blur(20px)' }}
       onClick={onClose}
     >
       <motion.div
-        initial={{ scale: 0.88, opacity: 0, y: 30 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.88, opacity: 0, y: 30 }}
-        transition={{ type: 'spring', damping: 22, stiffness: 300 }}
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 40, opacity: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         onClick={e => e.stopPropagation()}
-        className="relative w-full max-w-2xl rounded-3xl overflow-hidden"
-        style={{ background: '#0D0B16', border: `1px solid ${project.color}35` }}
+        className="relative w-full max-w-5xl bg-surface border border-white/5 overflow-hidden flex flex-col md:flex-row"
       >
-        {/* Image */}
-        <div className="relative h-56 overflow-hidden">
+        <button onClick={onClose} data-hover
+          className="absolute top-6 right-6 w-10 h-10 bg-white/5 hover:bg-electric hover:text-void text-white flex items-center justify-center transition-colors z-20"
+        >
+          <X size={20} />
+        </button>
+
+        <div className="w-full md:w-3/5 h-64 md:h-[600px] relative">
           <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, ${project.color}20, #0D0B16)` }} />
-          <button onClick={onClose} data-hover
-            className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center transition-all"
-            style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <X size={16} className="text-white" />
-          </button>
-          <div className="absolute top-4 left-4 font-mono-code text-xs px-3 py-1.5 rounded-full"
-            style={{ background: `${project.color}25`, color: project.color, border: `1px solid ${project.color}50` }}>
-            {project.category}
-          </div>
+          <div className="absolute inset-0 bg-void/20" />
         </div>
 
-        {/* Content */}
-        <div className="p-8 space-y-5">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-              style={{ background: `${project.color}15`, border: `1px solid ${project.color}30` }}>
-              <Icon size={22} style={{ color: project.color }} />
+        <div className="w-full md:w-2/5 p-8 md:p-12 flex flex-col justify-between">
+          <div>
+            <div className="font-mono text-[10px] tracking-mega-wide text-electric mb-4 uppercase">{project.category} · {project.year}</div>
+            <h3 className="font-display font-bold text-3xl md:text-4xl text-white uppercase tracking-wider mb-2 leading-tight">{project.title}</h3>
+            <p className="font-body text-sm text-ghost font-light mb-8">{project.subtitle}</p>
+
+            <p className="font-body text-ghost text-sm leading-relaxed font-light mb-8">{project.description}</p>
+
+            <div className="grid grid-cols-3 gap-4 mb-8">
+              {project.stats.map(({ label, value }) => (
+                <div key={label}>
+                  <div className="font-display font-bold text-xl text-ice">{value}</div>
+                  <div className="font-mono text-[10px] text-ghost/60 mt-1 tracking-wider uppercase">{label}</div>
+                </div>
+              ))}
             </div>
-            <div>
-              <div className="font-mono-code text-xs tracking-widest uppercase mb-1" style={{ color: project.accentColor }}>{project.subtitle}</div>
-              <h3 className="font-display font-bold text-2xl text-white">{project.title}</h3>
-              <span className="font-mono-code text-xs text-ghost">{project.year}</span>
+
+            <div className="flex flex-wrap gap-2 mb-12">
+              {project.tech.map(t => (
+                <span key={t} className="font-mono text-[10px] tracking-widest uppercase border border-white/10 px-3 py-1.5 text-ghost">
+                  {t}
+                </span>
+              ))}
             </div>
           </div>
 
-          <p className="font-body text-ghost text-sm leading-relaxed">{project.description}</p>
-
-          <div className="grid grid-cols-3 gap-3">
-            {project.stats.map(({ label, value }) => (
-              <div key={label} className="text-center p-3 rounded-xl"
-                style={{ background: `${project.color}08`, border: `1px solid ${project.color}18` }}>
-                <div className="font-display font-bold text-lg" style={{ color: project.color }}>{value}</div>
-                <div className="font-mono-code text-xs text-ghost mt-0.5">{label}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {project.tech.map(t => (
-              <span key={t} className="font-mono-code text-xs px-2.5 py-1 rounded-lg"
-                style={{ background: `${project.color}08`, color: project.color + 'CC', border: `1px solid ${project.color}20` }}>
-                {t}
-              </span>
-            ))}
-          </div>
-
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-col gap-3">
             <a href={project.demo} target="_blank" rel="noopener noreferrer" data-hover
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-display font-semibold text-sm text-void transition-all hover:scale-[1.02]"
-              style={{ background: `linear-gradient(135deg, ${project.color}, ${project.accentColor})` }}>
-              <ArrowUpRight size={16} />
-              Live Demo
+              className="w-full flex items-center justify-between px-6 py-4 bg-white text-void font-display font-bold text-xs tracking-mega-wide uppercase transition-colors hover:bg-electric">
+              <span>Launch Platform</span>
+              <ExternalLink size={16} />
             </a>
             <a href={project.github} target="_blank" rel="noopener noreferrer" data-hover
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-display font-medium text-sm text-white transition-all hover:scale-[1.02]"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              className="w-full flex items-center justify-between px-6 py-4 border border-white/20 text-white font-display font-bold text-xs tracking-mega-wide uppercase transition-colors hover:border-electric hover:text-electric">
+              <span>View Source</span>
               <Github size={16} />
-              Source Code
             </a>
           </div>
         </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-function ProjectCard({ project, index, onClick }) {
-  const cardRef = useRef(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [hovered, setHovered] = useState(false);
-
-  const { scrollYProgress } = useScroll({ target: cardRef, offset: ['start end', 'end start'] });
-  const y = useTransform(scrollYProgress, [0, 1], [70, -70]);
-  const smoothY = useSpring(y, { stiffness: 60, damping: 20 });
-  const opacity = useTransform(scrollYProgress, [0, 0.12, 0.88, 1], [0, 1, 1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.12, 0.88, 1], [0.93, 1, 1, 0.96]);
-
-  const handleMouseMove = (e) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    setTilt({
-      x: ((e.clientX - rect.left) / rect.width - 0.5) * 12,
-      y: -((e.clientY - rect.top) / rect.height - 0.5) * 12,
-    });
-  };
-
-  const Icon = project.icon;
-
-  return (
-    <motion.div ref={cardRef} style={{ opacity, scale }} className="w-full">
-      <motion.div
-        style={{
-          y: smoothY,
-          transform: hovered
-            ? `perspective(1200px) rotateY(${tilt.x}deg) rotateX(${tilt.y}deg)`
-            : 'perspective(1200px) rotateY(0deg) rotateX(0deg)',
-          transition: hovered
-            ? 'transform 0.08s ease, border-color 0.4s ease, box-shadow 0.4s ease'
-            : 'transform 0.6s cubic-bezier(0.16,1,0.3,1), border-color 0.4s ease, box-shadow 0.4s ease',
-          background: 'rgba(255,255,255,0.02)',
-          border: `1px solid ${hovered ? project.color + '55' : 'rgba(255,255,255,0.06)'}`,
-          backdropFilter: 'blur(24px)',
-          boxShadow: hovered
-            ? `0 30px 80px ${project.color}25, 0 0 0 1px ${project.color}20`
-            : '0 8px 32px rgba(0,0,0,0.4)',
-        }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => { setHovered(false); setTilt({ x: 0, y: 0 }); }}
-        onClick={onClick}
-        data-hover
-        className="group relative rounded-3xl overflow-hidden cursor-pointer"
-      >
-        {/* Image */}
-        <div className="relative h-60 overflow-hidden">
-          <img src={project.image} alt={project.title}
-            className="w-full h-full object-cover transition-transform duration-700"
-            style={{ transform: hovered ? 'scale(1.06)' : 'scale(1)' }} />
-          <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, ${project.color}18 0%, #08060E 100%)` }} />
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-            style={{ background: `radial-gradient(ellipse at 50% 0%, ${project.color}28 0%, transparent 65%)` }} />
-          <div className="absolute top-5 left-5 right-5 flex justify-between">
-            <div className="font-mono-code text-xs px-3 py-1.5 rounded-full"
-              style={{ background: `${project.color}22`, color: project.color, border: `1px solid ${project.color}45` }}>
-              {project.category}
-            </div>
-            <div className="font-mono-code text-xs px-3 py-1.5 rounded-full glass-pane" style={{ color: project.accentColor }}>
-              {project.year}
-            </div>
-          </div>
-          <div className="absolute bottom-5 left-5 w-13 h-13 w-12 h-12 rounded-2xl flex items-center justify-center"
-            style={{ background: `${project.color}18`, border: `1px solid ${project.color}35`,
-              boxShadow: hovered ? `0 0 28px ${project.color}45` : 'none', transition: 'box-shadow 0.4s ease' }}>
-            <Icon size={24} style={{ color: project.color }} />
-          </div>
-
-          {/* Click-to-open hint */}
-          <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <div className="flex items-center gap-1.5 font-mono-code text-xs px-3 py-1.5 rounded-full"
-              style={{ background: `${project.color}20`, color: project.color, border: `1px solid ${project.color}40` }}>
-              <ArrowUpRight size={12} />
-              View Details
-            </div>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="p-7 space-y-4">
-          <div>
-            <div className="font-mono-code text-xs tracking-widest uppercase mb-1.5" style={{ color: project.accentColor }}>
-              {project.subtitle}
-            </div>
-            <h3 className="font-display font-bold text-2xl text-white leading-tight">{project.title}</h3>
-          </div>
-
-          <p className="font-body text-ghost text-sm leading-relaxed line-clamp-3">{project.description}</p>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-2.5">
-            {project.stats.map(({ label, value }) => (
-              <div key={label} className="text-center p-2.5 rounded-xl"
-                style={{ background: `${project.color}07`, border: `1px solid ${project.color}15` }}>
-                <div className="font-display font-bold text-base" style={{ color: project.color }}>{value}</div>
-                <div className="font-mono-code text-xs text-ghost mt-0.5">{label}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Tech tags */}
-          <div className="flex flex-wrap gap-1.5">
-            {project.tech.map(t => (
-              <span key={t} className="font-mono-code text-xs px-2.5 py-1 rounded-lg"
-                style={{ background: `${project.color}08`, color: project.color + 'BB', border: `1px solid ${project.color}18` }}>
-                {t}
-              </span>
-            ))}
-          </div>
-
-          {/* Action row */}
-          <div className="flex items-center gap-4 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-            <a href={project.github} target="_blank" rel="noopener noreferrer"
-              onClick={e => e.stopPropagation()} data-hover
-              className="flex items-center gap-2 font-mono-code text-xs text-ghost hover:text-white transition-colors">
-              <Github size={13} /> Source
-            </a>
-            <a href={project.demo} target="_blank" rel="noopener noreferrer"
-              onClick={e => e.stopPropagation()} data-hover
-              className="flex items-center gap-2 font-mono-code text-xs" style={{ color: project.color }}>
-              <ExternalLink size={13} /> Live Demo
-            </a>
-            <div className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-300">
-              <div className="font-mono-code text-xs px-3 py-1 rounded-full"
-                style={{ background: `${project.color}18`, color: project.color }}>
-                Click to explore →
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Corner accents */}
-        {[['top-3 left-3', 'border-t border-l'], ['top-3 right-3', 'border-t border-r'],
-          ['bottom-3 left-3', 'border-b border-l'], ['bottom-3 right-3', 'border-b border-r']].map(([pos, border], i) => (
-          <div key={i} className={`absolute ${pos} w-5 h-5 ${border} opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`}
-            style={{ borderColor: project.color + '80' }} />
-        ))}
       </motion.div>
     </motion.div>
   );
@@ -307,53 +137,96 @@ export default function ProjectsSection() {
   const sectionRef = useRef(null);
   const [selectedProject, setSelectedProject] = useState(null);
 
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'start start'] });
-  const headerY = useTransform(scrollYProgress, [0, 1], [60, 0]);
-  const headerOpacity = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
+  const yRange = useTransform(scrollYProgress, [0, 1], [100, -100]);
 
   return (
-    <section id="projects" ref={sectionRef} className="relative py-32 px-6 overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at 80% 50%, rgba(192,132,252,0.04) 0%, transparent 55%)' }} />
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,179,71,0.03) 0%, transparent 55%)' }} />
+    <section id="projects" ref={sectionRef} className="relative py-32 overflow-hidden bg-transparent">
+      {/* Structural Lines */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="vertical-line left-[10%]" />
+        <div className="vertical-line right-[10%]" />
+      </div>
 
-      <div className="max-w-5xl mx-auto">
-        <motion.div style={{ y: headerY, opacity: headerOpacity }} className="mb-20">
-          <span className="font-mono-code text-electric text-sm tracking-[0.3em] uppercase">03 / Projects</span>
-          <div className="mt-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <h2 className="font-display font-bold text-5xl md:text-6xl text-white tracking-tight leading-none">
-              The Artifact <span className="gradient-electric-nebula">Gallery</span>
-            </h2>
-            <p className="font-body text-ghost max-w-xs text-sm leading-relaxed md:text-right">
-              Click any card to explore the full demo.
-            </p>
-          </div>
-          <div className="mt-8 h-px w-full"
-            style={{ background: 'linear-gradient(90deg, #ea580c 0%, #fbbf24 45%, #fde047 70%, transparent 100%)', opacity: 0.35 }} />
-        </motion.div>
-
-        <div className="space-y-10">
-          {PROJECTS.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} onClick={() => setSelectedProject(project)} />
-          ))}
-        </div>
-
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-14 text-center"
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-12"
         >
-          <div className="inline-flex items-center gap-3 font-mono-code text-xs text-ghost px-6 py-3 rounded-full glass-pane">
-            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
-              className="w-2 h-2 rounded-full" style={{ background: 'conic-gradient(#ea580c, #fbbf24, #fde047, #ea580c)' }} />
-            More projects in development · check GitHub
-            <motion.div animate={{ rotate: -360 }} transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
-              className="w-2 h-2 rounded-full" style={{ background: 'conic-gradient(#fbbf24, #fde047, #f59e0b, #fbbf24)' }} />
+          <div>
+            <span className="font-mono text-electric text-[10px] tracking-mega-wide uppercase">04 / Portfolio</span>
+            <h2 className="mt-6 font-display font-bold text-5xl md:text-7xl text-white tracking-widest uppercase leading-[1.1]">
+              DIGITAL <span className="text-ghost">DEVELOPMENTS</span>
+            </h2>
+          </div>
+          <div className="font-mono text-[10px] tracking-mega-wide text-ghost uppercase max-w-xs leading-relaxed">
+            A curated selection of high-performance web applications and enterprise systems.
           </div>
         </motion.div>
+
+        <div className="space-y-32">
+          {PROJECTS.map((project, i) => (
+            <motion.div
+              key={project.id}
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="group cursor-pointer block w-full"
+              onClick={() => setSelectedProject(project)}
+            >
+              <div className="relative w-full aspect-[21/9] md:aspect-[21/8] overflow-hidden bg-surface mb-8">
+                <img 
+                  src={project.image} 
+                  alt={project.title} 
+                  className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-105" 
+                />
+                <div className="absolute inset-0 bg-void/30 group-hover:bg-transparent transition-colors duration-1000" />
+                
+                {/* Overlay hover UI */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-void/40 backdrop-blur-sm">
+                  <div className="flex items-center gap-4 px-8 py-4 border border-white text-white font-display font-bold text-sm tracking-mega-wide uppercase">
+                    Explore Details <ArrowRight size={16} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <h3 className="font-display font-bold text-3xl text-ice tracking-wider uppercase mb-2">{project.title}</h3>
+                  <div className="font-mono text-[10px] text-ghost tracking-mega-wide uppercase mb-4">{project.subtitle}</div>
+                  
+                  <div className="flex gap-6 mt-4">
+                    <a 
+                      href={project.demo} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-2 text-[10px] font-mono tracking-mega-wide uppercase text-white drop-shadow-[0_0_8px_rgba(0,136,255,0.8)] hover:drop-shadow-[0_0_15px_rgba(0,136,255,1)] transition-all duration-300"
+                    >
+                      <ExternalLink size={14} /> Visit Site
+                    </a>
+                    <a 
+                      href={project.github} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-2 text-[10px] font-mono tracking-mega-wide uppercase text-ice drop-shadow-[0_0_6px_rgba(255,255,255,0.4)] hover:text-white hover:drop-shadow-[0_0_12px_rgba(255,255,255,1)] transition-all duration-300"
+                    >
+                      <Github size={14} /> Source Code
+                    </a>
+                  </div>
+                </div>
+                <div className="font-mono text-[10px] text-electric tracking-mega-wide uppercase border border-electric/30 px-4 py-2 mt-4 md:mt-0">
+                  {project.category}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
 
       <AnimatePresence>

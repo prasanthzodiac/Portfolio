@@ -1,5 +1,6 @@
 import React from 'react';
 import CustomCursor from '../components/portfolio/CustomCursor';
+import { DottedSurface } from '../components/ui/dotted-surface';
 import HeroSection from '../components/portfolio/HeroSection';
 import AboutSection from '../components/portfolio/AboutSection';
 import SkillsSection from '../components/portfolio/SkillsSection';
@@ -9,10 +10,12 @@ import ContactSection from '../components/portfolio/ContactSection';
 import NavBar from '../components/portfolio/NavBar';
 import FloatingContact from '../components/portfolio/FloatingContact';
 import ScrollReveal from '../components/portfolio/ScrollReveal';
+import FooterSection from '../components/portfolio/FooterSection';
 
 export default function Portfolio() {
   return (
-    <div className="noise-overlay bg-void min-h-screen overflow-x-hidden">
+    <div className="noise-overlay min-h-screen overflow-x-hidden relative">
+      <DottedSurface />
       <CustomCursor />
       <NavBar />
 
@@ -44,6 +47,7 @@ export default function Portfolio() {
         <ContactSection />
       </ScrollReveal>
 
+      <FooterSection />
       <FloatingContact />
     </div>
   );

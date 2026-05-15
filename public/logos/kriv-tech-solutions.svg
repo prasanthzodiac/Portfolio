@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Kriv Tech Solutions">
+  <rect width="128" height="128" rx="20" fill="#5FD4E8"/>
+  <text x="64" y="82" text-anchor="middle" font-family="system-ui,Segoe UI,sans-serif" font-size="44" font-weight="800" fill="#ffffff" letter-spacing="-0.02em">KRIV</text>
+  <path d="M98 38l8 6-8 6" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

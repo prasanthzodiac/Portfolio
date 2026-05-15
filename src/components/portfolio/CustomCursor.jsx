@@ -3,49 +3,61 @@ import React, { useEffect, useRef } from 'react';
 export default function CustomCursor() {
   const cursorRef = useRef(null);
   const dotRef = useRef(null);
-  const pos = useRef({ x: 0, y: 0 });
-  const current = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
+    const cursor = cursorRef.current;
+    const dot = dotRef.current;
+    if (!cursor || !dot) return;
+
+    let mouseX = 0, mouseY = 0;
+    let cursorX = 0, cursorY = 0;
+
     const onMove = (e) => {
-      pos.current = { x: e.clientX, y: e.clientY };
-      if (dotRef.current) {
-        dotRef.current.style.left = e.clientX + 'px';
-        dotRef.current.style.top = e.clientY + 'px';
-      }
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      dot.style.left = mouseX + 'px';
+      dot.style.top = mouseY + 'px';
     };
 
-    const onHover = () => cursorRef.current?.classList.add('hovering');
-    const onLeave = () => cursorRef.current?.classList.remove('hovering');
-
-    document.addEventListener('mousemove', onMove);
-    document.querySelectorAll('a, button, [data-hover]').forEach(el => {
-      el.addEventListener('mouseenter', onHover);
-      el.addEventListener('mouseleave', onLeave);
-    });
-
-    let raf;
     const animate = () => {
-      current.current.x += (pos.current.x - current.current.x) * 0.12;
-      current.current.y += (pos.current.y - current.current.y) * 0.12;
-      if (cursorRef.current) {
-        cursorRef.current.style.left = current.current.x + 'px';
-        cursorRef.current.style.top = current.current.y + 'px';
-      }
-      raf = requestAnimationFrame(animate);
+      cursorX += (mouseX - cursorX) * 0.12;
+      cursorY += (mouseY - cursorY) * 0.12;
+      cursor.style.left = cursorX + 'px';
+      cursor.style.top = cursorY + 'px';
+      requestAnimationFrame(animate);
     };
-    raf = requestAnimationFrame(animate);
+
+    // Hover detection
+    const onOver = (e) => {
+      if (e.target.closest('[data-hover], a, button')) {
+        cursor.classList.add('hovering');
+      }
+    };
+    const onOut = (e) => {
+      if (e.target.closest('[data-hover], a, button')) {
+        cursor.classList.remove('hovering');
+      }
+    };
+
+    window.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseover', onOver);
+    document.addEventListener('mouseout', onOut);
+    requestAnimationFrame(animate);
 
     return () => {
-      document.removeEventListener('mousemove', onMove);
-      cancelAnimationFrame(raf);
+      window.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseover', onOver);
+      document.removeEventListener('mouseout', onOut);
     };
   }, []);
 
+  // Hide on touch devices
+  if (typeof window !== 'undefined' && 'ontouchstart' in window) return null;
+
   return (
     <>
-      <div ref={cursorRef} className="custom-cursor" />
-      <div ref={dotRef} className="custom-cursor-dot" />
+      <div ref={cursorRef} className="custom-cursor hidden md:block" />
+      <div ref={dotRef} className="custom-cursor-dot hidden md:block" />
     </>
   );
 }

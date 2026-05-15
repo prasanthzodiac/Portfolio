@@ -1,192 +1,108 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import React, { useRef, useEffect } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { Mail, Github, Linkedin, MapPin, ArrowRight } from 'lucide-react';
 import * as THREE from 'three';
-import { Mail, Github, Linkedin, Phone, MapPin } from 'lucide-react';
+
+const resumeHref = `${import.meta.env.BASE_URL || '/'}Prasanth S - Resume.pdf`.replace(/([^:]\/)\/{2,}/g, '$1/');
 
 const CONTACTS = [
-  { icon: Mail, label: 'Email', value: 'Prasanthzodiac@gmail.com', href: 'mailto:Prasanthzodiac@gmail.com', color: '#FFB347' },
-  { icon: Github, label: 'GitHub', value: 'github.com/prasanthzodiac', href: 'https://github.com/prasanthzodiac', color: '#C084FC' },
-  { icon: Linkedin, label: 'LinkedIn', value: 'linkedin.com/in/prasanthzodiac', href: 'https://linkedin.com/in/prasanthzodiac', color: '#FFB347' },
-  { icon: Phone, label: 'Phone', value: '+91 9080478462', href: 'tel:+919080478462', color: '#F5C842' },
-  { icon: MapPin, label: 'Location', value: 'Pollachi, Tamil Nadu', href: '#', color: '#A09080' },
+  { label: 'EMAIL', value: 'Prasanthzodiac@gmail.com', href: 'mailto:Prasanthzodiac@gmail.com' },
+  { label: 'GITHUB', value: 'prasanthzodiac', href: 'https://github.com/prasanthzodiac' },
+  { label: 'LINKEDIN', value: 'Prasanth S', href: 'https://linkedin.com/in/prasanth-s-76b668285' },
+  { label: 'LOCATION', value: 'Coimbatore, TN, India', href: null },
 ];
 
 export default function ContactSection() {
-  const canvasRef = useRef(null);
   const sectionRef = useRef(null);
-  const [hovered, setHovered] = useState(null);
-
+  const canvasRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end end'] });
-  const coreY = useTransform(scrollYProgress, [0, 0.5], [60, 0]);
-  const coreOpacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
-  const linksY = useTransform(scrollYProgress, [0.1, 0.5], [80, 0]);
-  const linksOpacity = useTransform(scrollYProgress, [0.1, 0.4], [0, 1]);
-  const smoothCoreY = useSpring(coreY, { stiffness: 50, damping: 18 });
-  const smoothLinksY = useSpring(linksY, { stiffness: 50, damping: 18 });
+  const y = useTransform(scrollYProgress, [0, 1], [100, 0]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-    camera.position.z = 4;
+    const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+    camera.position.z = 5;
 
-    // Multi-layered pulsing core
-    const geo1 = new THREE.IcosahedronGeometry(0.9, 2);
-    const mat1 = new THREE.MeshPhysicalMaterial({
-      color: 0xFFB347, emissive: 0xCC7700, emissiveIntensity: 0.3,
-      wireframe: true, transparent: true, opacity: 0.5,
-    });
-    const core1 = new THREE.Mesh(geo1, mat1);
-    scene.add(core1);
+    // Minimal architectural wireframe box
+    const geo = new THREE.BoxGeometry(2, 2, 2, 4, 4, 4);
+    const mat = new THREE.LineBasicMaterial({ color: 0x0088FF, transparent: true, opacity: 0.15 });
+    const wireframe = new THREE.LineSegments(new THREE.EdgesGeometry(geo), mat);
+    scene.add(wireframe);
 
-    const geo2 = new THREE.IcosahedronGeometry(1.3, 1);
-    const mat2 = new THREE.MeshBasicMaterial({ color: 0xC084FC, wireframe: true, transparent: true, opacity: 0.18 });
-    const core2 = new THREE.Mesh(geo2, mat2);
-    scene.add(core2);
-
-    // Orbiting rings
-    const addRing = (radius, color, opacity, rx, ry) => {
-      const g = new THREE.TorusGeometry(radius, 0.012, 8, 100);
-      const m = new THREE.MeshBasicMaterial({ color, transparent: true, opacity });
-      const mesh = new THREE.Mesh(g, m);
-      mesh.rotation.x = rx; mesh.rotation.y = ry;
-      scene.add(mesh);
-      return mesh;
-    };
-    const r1 = addRing(1.9, 0xFFB347, 0.3, Math.PI * 0.3, 0);
-    const r2 = addRing(2.4, 0xC084FC, 0.18, Math.PI * 0.6, Math.PI * 0.25);
-    const r3 = addRing(2.8, 0xF5C842, 0.1, Math.PI * 0.1, Math.PI * 0.5);
-
-    const l1 = new THREE.PointLight(0xFFB347, 6, 12);
-    l1.position.set(3, 3, 3); scene.add(l1);
-    const l2 = new THREE.PointLight(0xC084FC, 4, 12);
-    l2.position.set(-3, -2, 2); scene.add(l2);
-
-    let raf, t = 0;
+    let raf, time = 0;
     const animate = () => {
       raf = requestAnimationFrame(animate);
-      t += 0.008;
-      core1.rotation.x += 0.005; core1.rotation.y += 0.007;
-      core2.rotation.x -= 0.004; core2.rotation.y -= 0.006;
-      r1.rotation.z += 0.004; r2.rotation.z -= 0.003; r3.rotation.z += 0.002;
-      mat1.emissiveIntensity = 0.25 + Math.sin(t) * 0.2;
-      l1.intensity = 5 + Math.sin(t * 1.3) * 2;
+      time += 0.002;
+      wireframe.rotation.x = time * 0.5;
+      wireframe.rotation.y = time * 0.8;
       renderer.render(scene, camera);
     };
-    raf = requestAnimationFrame(animate);
-    return () => { cancelAnimationFrame(raf); renderer.dispose(); };
+    animate();
+
+    const handleResize = () => {
+      camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', handleResize); renderer.dispose(); };
   }, []);
 
   return (
-    <section id="contact" ref={sectionRef} className="relative py-32 px-6 overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: 'linear-gradient(90deg, transparent, #ea580c 25%, #fbbf24 50%, #fde047 75%, transparent)' }} />
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at 50% 80%, rgba(255,179,71,0.04) 0%, transparent 55%)' }} />
+    <section id="contact" ref={sectionRef} className="relative py-40 overflow-hidden bg-transparent border-t border-white/5">
+      {/* Structural Lines */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="vertical-line left-[10%]" />
+        <div className="vertical-line right-[10%]" />
+      </div>
 
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-20"
-        >
-          <span className="font-mono-code text-electric text-sm tracking-[0.3em] uppercase">04 / Contact</span>
-          <h2 className="mt-4 font-display font-bold text-5xl md:text-6xl text-white tracking-tight">
-            The <span className="gradient-electric-nebula">Uplink</span>
+      <div className="absolute top-0 right-0 w-1/2 h-full z-0 opacity-30 pointer-events-none">
+        <canvas ref={canvasRef} className="w-full h-full" />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center text-center">
+        <motion.div style={{ y, opacity }} className="w-full">
+          <span className="font-mono text-electric text-[10px] tracking-mega-wide uppercase block mb-8">05 / Initiate Contact</span>
+          
+          <h2 className="font-display font-bold text-[clamp(3rem,10vw,10rem)] text-white tracking-widest uppercase leading-none mb-20">
+            CONNECT.
           </h2>
-          <p className="mt-4 font-body text-ghost max-w-lg mx-auto">
-            Ready to architect something extraordinary together? Initiate the transmission.
-          </p>
-        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* 3D Core */}
-          <motion.div style={{ y: smoothCoreY, opacity: coreOpacity }} className="flex justify-center">
-            <div className="relative w-full max-w-sm h-[380px] rounded-3xl overflow-hidden"
-              style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,179,71,0.1)', backdropFilter: 'blur(24px)' }}>
-              <canvas ref={canvasRef} className="w-full h-full" />
-              <div className="absolute inset-0 pointer-events-none"
-                style={{ background: 'radial-gradient(ellipse at center, transparent 35%, #08060E 90%)' }} />
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="text-center">
-                  <div className="font-display font-bold text-2xl text-electric text-glow-gold">CONNECT</div>
-                  <div className="font-mono-code text-xs text-ghost mt-2 tracking-[0.3em]">TRANSMISSION READY</div>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10 w-full max-w-6xl mx-auto">
+            {CONTACTS.map((contact, i) => (
+              <div key={i} className="bg-void p-8 group transition-colors hover:bg-white/5 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-electric scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" />
+                <div className="font-mono text-[10px] text-ghost tracking-mega-wide uppercase mb-4">{contact.label}</div>
+                {contact.href ? (
+                  <a href={contact.href} target="_blank" rel="noopener noreferrer" className="font-display font-bold text-lg text-ice group-hover:text-electric transition-colors flex items-center justify-center gap-2">
+                    {contact.value} <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all" />
+                  </a>
+                ) : (
+                  <div className="font-display font-bold text-lg text-ice">{contact.value}</div>
+                )}
               </div>
-            </div>
-          </motion.div>
-
-          {/* Contact cards */}
-          <motion.div style={{ y: smoothLinksY, opacity: linksOpacity }} className="space-y-3">
-            {CONTACTS.map(({ icon: Icon, label, value, href, color }, i) => (
-              <motion.a
-                key={label}
-                href={href}
-                target={href.startsWith('http') ? '_blank' : undefined}
-                rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                data-hover
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                onMouseEnter={() => setHovered(label)}
-                onMouseLeave={() => setHovered(null)}
-                className="flex items-center gap-5 p-5 rounded-2xl transition-all duration-400 group"
-                style={{
-                  background: hovered === label ? `${color}08` : 'rgba(255,255,255,0.02)',
-                  border: `1px solid ${hovered === label ? color + '40' : 'rgba(255,255,255,0.05)'}`,
-                  boxShadow: hovered === label ? `0 8px 32px ${color}15` : 'none',
-                }}
-              >
-                <div className="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300"
-                  style={{
-                    background: `${color}12`,
-                    boxShadow: hovered === label ? `0 0 20px ${color}40` : 'none',
-                  }}>
-                  <Icon size={20} style={{ color }} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-mono-code text-xs tracking-widest uppercase mb-0.5" style={{ color }}>{label}</div>
-                  <div className="font-body text-white text-sm truncate">{value}</div>
-                </div>
-                <motion.div
-                  animate={{ x: hovered === label ? 0 : 6, opacity: hovered === label ? 1 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  style={{ color }}
-                >→</motion.div>
-              </motion.a>
             ))}
-          </motion.div>
-        </div>
+          </div>
 
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.3 }}
-          className="mt-24 pt-8 flex flex-col md:flex-row items-center justify-between gap-4"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
-        >
-          <div className="font-display font-bold text-2xl tracking-tight">
-            <span className="text-white">Prasanth</span>
-            <span className="text-gradient-brand-zodiac"> Zodiac</span>
-          </div>
-          <div className="font-mono-code text-xs text-ghost text-center">
-            © 2025 · Crafted with Three.js, React & Framer Motion
-          </div>
-          <div className="font-mono-code text-xs text-ghost">
-            <span className="text-electric">BE CSE</span> · Dr. Mahalingam College · Anna University
+          <div className="mt-20 flex justify-center">
+            <a
+              href={resumeHref}
+              download="Prasanth-S-Resume.pdf"
+              data-hover
+              className="px-12 py-6 bg-white text-void font-display font-bold text-xs tracking-mega-wide uppercase transition-colors hover:bg-electric flex items-center gap-4 group"
+            >
+              DOWNLOAD RESUME
+              <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
+            </a>
           </div>
         </motion.div>
       </div>

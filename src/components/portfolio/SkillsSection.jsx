@@ -2,366 +2,291 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import TechIconStrip from './TechIconStrip';
+import { 
+  SiReact, SiThreedotjs, SiFramer, SiTailwindcss, SiJavascript, SiHtml5, SiCss,
+  SiNodedotjs, SiExpress, SiSpringboot, SiPython, SiJsonwebtokens, SiMysql,
+  SiMongodb, SiRedis, SiGit, SiGithub, SiPostman, SiVite, SiNpm,
+  SiGnubash, SiWeb3Dotjs, SiC, SiJupyter
+} from 'react-icons/si';
+import { FaJava, FaDatabase, FaCode, FaBrain } from 'react-icons/fa';
 
-// Aurora color palette
+// Hubtown Pro Max palette
 const AURORA = {
-  teal:   0x00FFD1,
-  pink:   0xFF2D78,
-  violet: 0x7B5EFF,
-  solar:  0xFFE566,
+  teal:   0x0088FF,
+  pink:   0x2563EB,
+  violet: 0x0A192F,
+  solar:  0x0088FF,
   white:  0xffffff,
 };
 
 const SKILLS = [
-  { name: 'React',       category: 'Frontend', level: 85, color: '#61DAFB', desc: 'Hooks, component architecture, state management, and full SPA development.' },
-  { name: 'Java',        category: 'Backend',  level: 80, color: '#FFB347', desc: 'Core Java, OOP, Spring Boot, data structures and algorithms.' },
-  { name: 'Python',      category: 'Backend',  level: 78, color: '#FFE566', desc: 'Scripting, automation, ML integration, and backend APIs.' },
-  { name: 'Node.js',     category: 'Backend',  level: 75, color: '#00FFD1', desc: 'REST APIs, middleware, authentication, server-side logic.' },
-  { name: 'JavaScript',  category: 'Frontend', level: 82, color: '#FFE566', desc: 'ES6+, async/await, DOM APIs, modern patterns.' },
-  { name: 'HTML/CSS',    category: 'Frontend', level: 90, color: '#FF6B6B', desc: 'Semantic HTML5, advanced CSS3, responsive design, animations.' },
-  { name: 'SQL / MySQL', category: 'Database', level: 72, color: '#7B5EFF', desc: 'Relational databases, complex queries, joins, indexing.' },
-  { name: 'Git',         category: 'Tools',    level: 80, color: '#FF2D78', desc: 'Version control, branching, PRs, collaborative workflows.' },
-  { name: 'REST APIs',   category: 'Backend',  level: 78, color: '#00FFD1', desc: 'Designing, building and consuming RESTful APIs.' },
-  { name: 'Spring Boot', category: 'Backend',  level: 70, color: '#6DB33F', desc: 'Enterprise Java applications, security, JPA, MVC.' },
+  { id: 'react', label: 'React', category: 'frontend', icon: SiReact },
+  { id: 'three', label: 'Three.js', category: 'frontend', icon: SiThreedotjs },
+  { id: 'framer', label: 'Framer Motion', category: 'frontend', icon: SiFramer },
+  { id: 'tailwind', label: 'Tailwind CSS', category: 'frontend', icon: SiTailwindcss },
+  { id: 'js', label: 'JavaScript', category: 'frontend', icon: SiJavascript },
+  { id: 'html', label: 'HTML5', category: 'frontend', icon: SiHtml5 },
+  { id: 'css', label: 'CSS3', category: 'frontend', icon: SiCss },
+  
+  { id: 'node', label: 'Node.js', category: 'backend', icon: SiNodedotjs },
+  { id: 'express', label: 'Express', category: 'backend', icon: SiExpress },
+  { id: 'java', label: 'Java', category: 'backend', icon: FaJava },
+  { id: 'spring', label: 'Spring Boot', category: 'backend', icon: SiSpringboot },
+  { id: 'python', label: 'Python', category: 'backend', icon: SiPython },
+  { id: 'rest', label: 'REST APIs', category: 'backend', icon: FaCode },
+  { id: 'jwt', label: 'JWT Auth', category: 'backend', icon: SiJsonwebtokens },
+  
+  { id: 'mysql', label: 'MySQL', category: 'database', icon: SiMysql },
+  { id: 'mongo', label: 'MongoDB', category: 'database', icon: SiMongodb },
+  { id: 'redis', label: 'Redis', category: 'database', icon: SiRedis },
+  
+  { id: 'git', label: 'Git', category: 'tools', icon: SiGit },
+  { id: 'github', label: 'GitHub', category: 'tools', icon: SiGithub },
+  { id: 'postman', label: 'Postman', category: 'tools', icon: SiPostman },
+  { id: 'vite', label: 'Vite', category: 'tools', icon: SiVite },
+  { id: 'npm', label: 'NPM/Yarn', category: 'tools', icon: SiNpm },
+  
+  { id: 'ml', label: 'Machine Learning', category: 'other', icon: FaBrain },
+  { id: 'web3', label: 'Web3', category: 'other', icon: SiWeb3Dotjs },
+  { id: 'oop', label: 'OOP Concepts', category: 'other', icon: FaCode },
+  { id: 'ds', label: 'Data Structures', category: 'other', icon: FaDatabase },
+  { id: 'algorithms', label: 'Algorithms', category: 'other', icon: SiGnubash },
+  { id: 'c', label: 'C Programming', category: 'other', icon: SiC },
 ];
 
 export default function SkillsSection() {
-  const canvasRef = useRef(null);
+  const mountRef = useRef(null);
   const sectionRef = useRef(null);
-  const [selected, setSelected] = useState(null);
+  const iconRefs = useRef([]);
+  const [hoveredSkill, setHoveredSkill] = useState(null);
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
-  const bgY     = useTransform(scrollYProgress, [0, 1], ['0%', '25%']);
-  const titleY  = useTransform(scrollYProgress, [0, 0.3], [50, 0]);
-  const titleOp = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
+  const sphereY = useTransform(scrollYProgress, [0, 1], [100, -100]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.4;
-
+    if (!mountRef.current) return;
+    const container = mountRef.current;
+    
+    // Setup Three.js scene strictly for calculating 3D positions
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(55, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-    camera.position.set(0, 0, 6);
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.z = 26;
 
-    // ═══ CORE: layered icosahedron nebula ═══
-    const makeCore = (size, color, opacity, wire = false) => {
-      const g = new THREE.IcosahedronGeometry(size, wire ? 1 : 3);
-      const m = new THREE.MeshPhysicalMaterial({
-        color, emissive: color, emissiveIntensity: wire ? 0.6 : 0.25,
-        metalness: 1, roughness: 0.04,
-        transparent: true, opacity,
-        wireframe: wire,
-      });
-      return new THREE.Mesh(g, m);
-    };
+    const group = new THREE.Group();
+    scene.add(group);
 
-    const core1 = makeCore(0.55, AURORA.teal,   0.85, false);
-    const core2 = makeCore(0.72, AURORA.teal,   0.12, true);
-    const core3 = makeCore(0.9,  AURORA.violet, 0.08, true);
-    scene.add(core1, core2, core3);
+    // Inner wireframe sphere
+    const coreGeo = new THREE.IcosahedronGeometry(8, 2);
+    // Use an invisible material since we only want to project coordinates, 
+    // but wait, if we don't render, we don't need a renderer! 
+    // Actually, keeping the wireframe adds a nice tech background to the floating logos.
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+    renderer.domElement.style.position = 'absolute';
+    renderer.domElement.style.inset = '0';
+    renderer.domElement.style.pointerEvents = 'none'; // Let HTML take hovers
+    // Double drop-shadow for a super intense neon glow effect
+    renderer.domElement.style.filter = 'drop-shadow(0 0 15px rgba(0, 136, 255, 0.9)) drop-shadow(0 0 40px rgba(0, 136, 255, 0.5))'; 
 
-    // ═══ RINGS — multi-tilt orbital paths ═══
-    const makeRing = (r, tube, color, opacity, rx, ry, rz = 0) => {
-      const g = new THREE.TorusGeometry(r, tube, 12, 180);
-      const m = new THREE.MeshBasicMaterial({ color, transparent: true, opacity });
-      const mesh = new THREE.Mesh(g, m);
-      mesh.rotation.set(rx, ry, rz);
-      scene.add(mesh);
-      return mesh;
-    };
+    // Increased opacity from 0.15 to 0.6 so the wireframe lines are solid neon tubes
+    const coreMat = new THREE.MeshBasicMaterial({ color: AURORA.teal, wireframe: true, transparent: true, opacity: 0.6 });
+    const core = new THREE.Mesh(coreGeo, coreMat);
+    group.add(core);
 
-    const rings = [
-      makeRing(1.6,  0.007, AURORA.teal,   0.55, Math.PI * 0.2,  0),
-      makeRing(2.1,  0.005, AURORA.pink,   0.40, Math.PI * 0.5,  Math.PI * 0.15),
-      makeRing(2.6,  0.004, AURORA.violet, 0.30, Math.PI * 0.75, Math.PI * 0.35),
-      makeRing(3.1,  0.003, AURORA.solar,  0.18, Math.PI * 0.15, Math.PI * 0.6),
-      makeRing(3.5,  0.002, AURORA.teal,   0.10, Math.PI * 0.4,  Math.PI * 0.2),
-    ];
+    const nodes = [];
+    const phi = Math.PI * (3 - Math.sqrt(5));
+    
+    SKILLS.forEach((skill, i) => {
+      const y = 1 - (i / (SKILLS.length - 1)) * 2;
+      const radiusAtY = Math.sqrt(1 - y * y);
+      const theta = phi * i;
 
-    // ═══ SKILL NODES — gem on each ring ═══
-    const nodeColors = [AURORA.teal, AURORA.pink, AURORA.violet, AURORA.solar, AURORA.teal,
-                        AURORA.pink, AURORA.violet, AURORA.solar, AURORA.teal, AURORA.pink];
-    const meshes = SKILLS.map((skill, i) => {
-      const angle = (i / SKILLS.length) * Math.PI * 2;
-      const ringR = rings[i % rings.length].geometry.parameters?.radius || (1.6 + (i % 4) * 0.4);
-      const hex = nodeColors[i];
-      const g = new THREE.OctahedronGeometry(0.18, 0);
-      const m = new THREE.MeshPhysicalMaterial({
-        color: hex, emissive: hex, emissiveIntensity: 0.7,
-        metalness: 0.9, roughness: 0.05,
-      });
-      const mesh = new THREE.Mesh(g, m);
-      mesh.userData = { skill, angle, r: 1.6 + (i % 4) * 0.38 };
-      scene.add(mesh);
-      return mesh;
+      const x = Math.cos(theta) * radiusAtY;
+      const z = Math.sin(theta) * radiusAtY;
+
+      const r = 11 + (Math.random() * 2 - 1);
+      
+      // We don't need visible meshes, just 3D anchors
+      const anchor = new THREE.Object3D();
+      anchor.position.set(x * r, y * r, z * r);
+      group.add(anchor);
+      nodes.push(anchor);
     });
 
-    // ═══ PARTICLE NEBULA CLOUD ═══
-    const COUNT = 1200;
-    const pPositions = new Float32Array(COUNT * 3);
-    const pColors    = new Float32Array(COUNT * 3);
-    const palette = [[0, 1, 0.82], [1, 0.17, 0.47], [0.48, 0.37, 1], [1, 0.9, 0.4]];
-    for (let i = 0; i < COUNT; i++) {
-      const r = 1.5 + Math.random() * 2.5;
-      const th = Math.random() * Math.PI * 2;
-      const ph = Math.random() * Math.PI;
-      pPositions[i*3]   = r * Math.sin(ph) * Math.cos(th);
-      pPositions[i*3+1] = r * Math.sin(ph) * Math.sin(th) * 0.6;
-      pPositions[i*3+2] = r * Math.cos(ph) * 0.5;
-      const c = palette[Math.floor(Math.random() * palette.length)];
-      pColors[i*3] = c[0]; pColors[i*3+1] = c[1]; pColors[i*3+2] = c[2];
-    }
-    const pGeo = new THREE.BufferGeometry();
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
-    pGeo.setAttribute('color',    new THREE.BufferAttribute(pColors, 3));
-    const pMat = new THREE.PointsMaterial({ size: 0.018, vertexColors: true, transparent: true, opacity: 0.7 });
-    const particles = new THREE.Points(pGeo, pMat);
-    scene.add(particles);
+    let raf;
+    let time = 0;
+    
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetX = 0;
+    let targetY = 0;
 
-    // ═══ LIGHTS ═══
-    scene.add(new THREE.AmbientLight(0xffffff, 0.15));
-    const lights = [
-      { color: AURORA.teal,   pos: [4, 4, 5],   i: 8 },
-      { color: AURORA.pink,   pos: [-4, -3, 4],  i: 6 },
-      { color: AURORA.violet, pos: [0, 5, -3],   i: 4 },
-      { color: AURORA.solar,  pos: [-3, 2, 5],   i: 3 },
-    ].map(({ color, pos, i }) => {
-      const l = new THREE.PointLight(color, i, 18);
-      l.position.set(...pos);
-      scene.add(l);
-      return l;
-    });
-
-    // Raycaster for click
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    const onCanvasClick = (e) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-      raycaster.setFromCamera(mouse, camera);
-      const hits = raycaster.intersectObjects(meshes);
-      setSelected(hits.length > 0 ? hits[0].object.userData.skill : null);
+    const handleMouseMove = (event) => {
+      mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
     };
-    canvas.addEventListener('click', onCanvasClick);
+    window.addEventListener('mousemove', handleMouseMove);
 
-    // Mouse tilt
-    const mouseTilt = { x: 0, y: 0 };
-    const onMove = (e) => {
-      mouseTilt.x = (e.clientX / window.innerWidth  - 0.5) * 0.6;
-      mouseTilt.y = (e.clientY / window.innerHeight - 0.5) * 0.4;
-    };
-    window.addEventListener('mousemove', onMove);
-
-    let time = 0, raf;
     const animate = () => {
       raf = requestAnimationFrame(animate);
-      time += 0.005;
+      time += 0.002;
 
-      // Tilt whole scene with mouse
-      scene.rotation.y += (mouseTilt.x - scene.rotation.y) * 0.03;
-      scene.rotation.x += (-mouseTilt.y - scene.rotation.x) * 0.03;
+      // Smooth interpolation for mouse interaction
+      targetX = THREE.MathUtils.lerp(targetX, mouseX, 0.05);
+      targetY = THREE.MathUtils.lerp(targetY, mouseY, 0.05);
 
-      // Core spin
-      core1.rotation.y += 0.008; core1.rotation.x += 0.003;
-      core2.rotation.y -= 0.01;  core2.rotation.z += 0.005;
-      core3.rotation.x += 0.006; core3.rotation.z -= 0.007;
+      // Rotate the group based on time and cursor position
+      group.rotation.y = time + targetX * 0.5;
+      group.rotation.x = Math.sin(time * 0.5) * 0.2 + targetY * 0.5;
 
-      // Ring spins — each at different speeds/axes
-      rings[0].rotation.z += 0.006;
-      rings[1].rotation.z -= 0.004;
-      rings[2].rotation.z += 0.003;  rings[2].rotation.x += 0.001;
-      rings[3].rotation.z -= 0.005;  rings[3].rotation.y += 0.002;
-      rings[4].rotation.z += 0.002;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
 
-      // Nodes orbit
-      meshes.forEach((m, i) => {
-        const speed = 0.2 + (i % 3) * 0.08;
-        const angle = m.userData.angle + time * speed;
-        const r = m.userData.r;
-        const tilt = (i % 2 === 0 ? 1 : -1) * 0.5;
-        m.position.set(
-          Math.cos(angle) * r,
-          Math.sin(angle * 0.8) * r * 0.35 + Math.sin(time * 0.5 + i) * 0.15,
-          Math.sin(angle + tilt) * r * 0.55,
-        );
-        m.rotation.x += 0.02; m.rotation.y += 0.015;
-        // Pulse emissive
-        m.material.emissiveIntensity = 0.5 + Math.sin(time * 2 + i * 0.8) * 0.3;
+      // Project 3D anchors to 2D HTML elements
+      const worldPos = new THREE.Vector3();
+      nodes.forEach((node, i) => {
+        const el = iconRefs.current[i];
+        if (!el) return;
+
+        // Get actual 3D world position BEFORE projection
+        node.getWorldPosition(worldPos);
+        const depth = worldPos.z; // Ranges from roughly -12 to +12
+        
+        // Now project to 2D screen space
+        worldPos.project(camera);
+
+        const x = (worldPos.x * 0.5 + 0.5) * w;
+        const y = (-(worldPos.y * 0.5) + 0.5) * h;
+        
+        // Linear depth mapping based on physical Z coordinate
+        const normalizedDepth = Math.max(0, Math.min(1, (depth + 12) / 24)); // 0 (back) to 1 (front)
+        
+        const scale = 0.5 + (normalizedDepth * 0.7); // Scale from 0.5 to 1.2
+        const elementOpacity = 0.15 + (normalizedDepth * 0.85); // Opacity from 0.15 to 1.0
+        const zIndex = Math.round(normalizedDepth * 100);
+
+        // Direct DOM manipulation for maximum performance
+        el.style.transform = `translate(-50%, -50%) translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+        el.style.opacity = elementOpacity;
+        el.style.zIndex = zIndex;
       });
-
-      // Particles drift
-      particles.rotation.y += 0.0008;
-      particles.rotation.x += 0.0003;
-
-      // Light flicker
-      lights[0].intensity = 7 + Math.sin(time * 1.3) * 2.5;
-      lights[1].intensity = 5 + Math.sin(time * 0.9 + 1) * 2;
-      lights[2].intensity = 3 + Math.sin(time * 1.7 + 2) * 1.5;
 
       renderer.render(scene, camera);
     };
-    raf = requestAnimationFrame(animate);
+    
+    animate();
 
-    const onResize = () => {
-      const w = canvas.clientWidth, h = canvas.clientHeight;
-      camera.aspect = w / h;
+    const handleResize = () => {
+      if (!container) return;
+      const nw = container.clientWidth;
+      const nh = container.clientHeight;
+      camera.aspect = nw / nh;
       camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+      renderer.setSize(nw, nh);
     };
-    window.addEventListener('resize', onResize);
+    window.addEventListener('resize', handleResize);
 
     return () => {
       cancelAnimationFrame(raf);
-      canvas.removeEventListener('click', onCanvasClick);
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('resize', onResize);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (container && renderer.domElement) {
+        container.removeChild(renderer.domElement);
+      }
       renderer.dispose();
     };
   }, []);
 
   return (
-    <section id="skills" ref={sectionRef} className="relative py-28 px-6 overflow-hidden">
-      {/* Aurora bg glow */}
-      <motion.div style={{ y: bgY }} className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full"
-          style={{ background: 'radial-gradient(ellipse, rgba(0,255,209,0.06) 0%, rgba(123,94,255,0.04) 40%, transparent 70%)' }} />
-        <div className="absolute top-1/4 right-0 w-[500px] h-[500px] rounded-full"
-          style={{ background: 'radial-gradient(ellipse, rgba(255,45,120,0.05) 0%, transparent 65%)' }} />
-      </motion.div>
+    <section id="skills" ref={sectionRef} className="relative py-32 overflow-hidden bg-transparent">
+      {/* Structural Lines */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="vertical-line left-[10%]" />
+        <div className="vertical-line right-[10%]" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-white/5" />
+      </div>
 
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <motion.div style={{ y: titleY, opacity: titleOp }} className="text-center mb-6">
-          <span className="font-mono-code text-electric text-sm tracking-[0.3em] uppercase">02 / Tech Stack</span>
-          <h2 className="mt-4 font-display font-bold text-5xl md:text-6xl text-white tracking-tight">
-            The <span className="gradient-electric-nebula">Knowledge</span> Sphere
-          </h2>
-          <p className="mt-3 font-body text-ghost max-w-md mx-auto text-sm">
-            Click any orbiting crystal · hover to pause the stream below
-          </p>
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <motion.div style={{ opacity }} className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 border-b border-white/5 pb-12">
+          <div>
+            <span className="font-mono text-electric text-[10px] tracking-mega-wide uppercase">03 / Technologies</span>
+            <h2 className="mt-6 font-display font-bold text-5xl md:text-7xl text-white tracking-widest uppercase leading-[1.1]">
+              KNOWLEDGE <span className="text-ghost">SPHERE</span>
+            </h2>
+          </div>
+          <div className="mt-6 md:mt-0 max-w-xs">
+            <p className="font-mono text-[10px] tracking-mega-wide text-ghost uppercase leading-relaxed">
+              Interact with the sphere. Hover over any technology node to identify the specific framework or language.
+            </p>
+          </div>
         </motion.div>
 
-        {/* ═══ FLOATING TECH ICON STRIP ═══ */}
-        <div className="mb-12">
-          <TechIconStrip />
-        </div>
-
-        {/* ═══ 3D + PANEL ═══ */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-          {/* Orrery */}
-          <div className="lg:col-span-2">
-            <div className="relative h-[520px] rounded-3xl overflow-hidden"
-              style={{
-                background: 'rgba(5,5,16,0.6)',
-                border: '1px solid rgba(0,255,209,0.1)',
-                backdropFilter: 'blur(24px)',
-                boxShadow: '0 0 80px rgba(0,255,209,0.04), 0 0 120px rgba(123,94,255,0.03)',
-              }}>
-              <canvas ref={canvasRef} className="w-full h-full" />
-              {/* Vignette */}
-              <div className="absolute inset-0 pointer-events-none"
-                style={{ background: 'radial-gradient(ellipse at center, transparent 35%, #050510 90%)' }} />
-              {/* Scanline */}
-              <div className="absolute inset-0 pointer-events-none opacity-[0.02]"
-                style={{
-                  backgroundImage: 'linear-gradient(rgba(0,255,209,0.5) 1px, transparent 1px)',
-                  backgroundSize: '100% 4px',
-                }} />
-              {/* Corner brackets */}
-              {[['top-4 left-4','border-t border-l'],['top-4 right-4','border-t border-r'],
-                ['bottom-4 left-4','border-b border-l'],['bottom-4 right-4','border-b border-r']].map(([pos, b], i) => (
-                <div key={i} className={`absolute ${pos} w-7 h-7 ${b} opacity-40`}
-                  style={{ borderColor: i < 2 ? '#00FFD1' : '#FF2D78' }} />
-              ))}
-              {/* HUD label */}
-              <div className="absolute top-5 left-1/2 -translate-x-1/2 font-mono-code text-xs text-electric opacity-30 tracking-[0.4em] uppercase">
-                Skill Matrix v2.0
-              </div>
-            </div>
-          </div>
-
-          {/* Panel */}
-          <div className="space-y-3">
-            <AnimatePresence mode="wait">
-              {selected ? (
-                <motion.div key={selected.name}
-                  initial={{ opacity: 0, y: 15, scale: 0.97 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -15, scale: 0.97 }}
-                  transition={{ duration: 0.35, ease: [0.16,1,0.3,1] }}
-                  className="rounded-2xl p-6 space-y-4 mb-3"
-                  style={{
-                    background: `${selected.color}0A`,
-                    border: `1px solid ${selected.color}30`,
-                    backdropFilter: 'blur(24px)',
-                    boxShadow: `0 0 40px ${selected.color}12`,
-                  }}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full animate-aurora-pulse"
-                      style={{ background: selected.color, boxShadow: `0 0 14px ${selected.color}` }} />
-                    <span className="font-mono-code text-xs tracking-widest uppercase text-ghost">{selected.category}</span>
-                  </div>
-                  <h3 className="font-display font-bold text-2xl text-white">{selected.name}</h3>
-                  <p className="font-body text-ghost text-sm leading-relaxed">{selected.desc}</p>
-                  <div className="space-y-2">
-                    <div className="flex justify-between font-mono-code text-xs">
-                      <span className="text-ghost">PROFICIENCY</span>
-                      <span style={{ color: selected.color }}>{selected.level}%</span>
-                    </div>
-                    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                      <motion.div initial={{ width: 0 }} animate={{ width: `${selected.level}%` }}
-                        transition={{ duration: 1, ease: [0.16,1,0.3,1] }}
-                        className="h-full rounded-full"
-                        style={{ background: `linear-gradient(90deg, ${selected.color}, #ffffff88)` }} />
-                    </div>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div key="prompt" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="rounded-2xl p-6 text-center mb-3"
-                  style={{ background: 'rgba(0,255,209,0.02)', border: '1px solid rgba(0,255,209,0.08)' }}>
-                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
-                    className="text-3xl mb-3 inline-block">⬡</motion.div>
-                  <p className="font-mono-code text-xs text-ghost tracking-widest">CLICK A CRYSTAL NODE</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Skill list */}
-            <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1"
-              style={{ scrollbarWidth: 'thin', scrollbarColor: '#00FFD1 transparent' }}>
-              {SKILLS.map(skill => {
-                const active = selected?.name === skill.name;
+        <div className="relative w-full h-[600px] flex items-center justify-center">
+          <motion.div style={{ y: sphereY }} className="absolute inset-0 flex justify-center items-center">
+            
+            {/* Massive Glowing Ambient Orb */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] max-w-[600px] max-h-[600px] bg-electric/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen z-0" />
+            
+            {/* The WebGL Canvas and HTML Overlay Container */}
+            <div ref={mountRef} className="w-full max-w-[800px] aspect-square relative z-10">
+              
+              {/* HTML Overlay for Logos */}
+              {SKILLS.map((skill, i) => {
+                const Icon = skill.icon;
                 return (
-                  <button key={skill.name} data-hover
-                    onClick={() => setSelected(active ? null : skill)}
-                    className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200 hover:scale-[1.01]"
-                    style={{
-                      background: active ? `${skill.color}10` : 'rgba(255,255,255,0.02)',
-                      border: `1px solid ${active ? skill.color + '40' : 'rgba(255,255,255,0.05)'}`,
-                      boxShadow: active ? `0 0 20px ${skill.color}15` : 'none',
-                    }}>
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-2 h-2 rounded-full transition-all"
-                        style={{ background: skill.color, boxShadow: active ? `0 0 10px ${skill.color}` : 'none' }} />
-                      <span className="font-display text-sm text-white">{skill.name}</span>
-                      <span className="font-mono-code text-xs text-ghost">{skill.category}</span>
-                    </div>
-                    <span className="font-mono-code text-xs" style={{ color: skill.color }}>{skill.level}%</span>
-                  </button>
+                  <div
+                    key={skill.id}
+                    ref={el => iconRefs.current[i] = el}
+                    onMouseEnter={() => setHoveredSkill(skill)}
+                    onMouseLeave={() => setHoveredSkill(null)}
+                    className="absolute top-0 left-0 flex items-center justify-center cursor-pointer transition-colors duration-300"
+                    style={{ 
+                      width: '48px', 
+                      height: '48px',
+                      color: hoveredSkill?.id === skill.id ? '#0088FF' : '#E2E8F0',
+                      filter: hoveredSkill?.id === skill.id ? 'drop-shadow(0 0 10px rgba(0, 136, 255, 0.8))' : 'drop-shadow(0 0 2px rgba(255, 255, 255, 0.2))',
+                    }}
+                  >
+                    <Icon size={32} />
+                  </div>
                 );
               })}
             </div>
-          </div>
+            
+            {/* Background ring */}
+            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+              <div className="w-[600px] h-[600px] rounded-full border border-white/5" />
+            </div>
+          </motion.div>
+
+          <AnimatePresence>
+            {hoveredSkill && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-30 text-center bg-transparent backdrop-blur-md px-10 py-6 border border-electric/30 shadow-[0_0_50px_rgba(0,136,255,0.3)]"
+              >
+                <div className="font-mono text-[10px] tracking-mega-wide text-electric uppercase mb-3 flex items-center justify-center gap-3">
+                  <span className="w-4 h-px bg-electric/50" />
+                  {hoveredSkill.category}
+                  <span className="w-4 h-px bg-electric/50" />
+                </div>
+                <div className="font-display font-bold text-4xl text-white tracking-widest uppercase flex items-center justify-center gap-4">
+                  {React.createElement(hoveredSkill.icon, { size: 36, className: "text-electric" })}
+                  {hoveredSkill.label}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
+      </div>
+      
+      <div className="relative z-20 mt-16 border-t border-white/5 pt-8 bg-transparent">
+         <TechIconStrip />
       </div>
     </section>
   );
