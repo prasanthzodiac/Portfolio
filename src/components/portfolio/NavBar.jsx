@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import ScrambleText from './ScrambleText';
-import { GlassEffect } from '../ui/liquid-glass';
-import { LiquidEffectAnimation } from '../ui/liquid-effect-animation';
+import { scrollToTarget } from '@/lib/smooth-scroll';
 
 const links = ['About', 'Skills', 'Projects', 'Contact'];
 
 export default function NavBar() {
   const [scrolled, setScrolled] = useState(false);
-  const [liquidState, setLiquidState] = useState({ active: false, x: 0, y: 0 });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -18,11 +15,8 @@ export default function NavBar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const navigate = useNavigate();
-
   const scrollTo = (id) => {
-    const el = document.getElementById(id.toLowerCase());
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    scrollToTarget(id.toLowerCase(), { offset: -96, duration: 1.1 });
   };
 
   const handleLogoClick = (e) => {

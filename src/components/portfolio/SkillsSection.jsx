@@ -6,7 +6,7 @@ import {
   SiReact, SiThreedotjs, SiFramer, SiTailwindcss, SiJavascript, SiHtml5, SiCss,
   SiNodedotjs, SiExpress, SiSpringboot, SiPython, SiJsonwebtokens, SiMysql,
   SiMongodb, SiRedis, SiGit, SiGithub, SiPostman, SiVite, SiNpm,
-  SiGnubash, SiWeb3Dotjs, SiC, SiJupyter
+  SiGnubash, SiWeb3Dotjs, SiC
 } from 'react-icons/si';
 import { FaJava, FaDatabase, FaCode, FaBrain } from 'react-icons/fa';
 

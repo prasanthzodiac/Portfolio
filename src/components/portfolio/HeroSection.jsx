@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useScroll, useTransform, motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import Spline from '@splinetool/react-spline';
 import ScrambleText from './ScrambleText';
 import { GlassFilter, GlassEffect } from '../ui/liquid-glass';
 import { soundManager } from '../../lib/sound';
+import { scrollToTarget } from '@/lib/smooth-scroll';
 
 const resumeHref = `${import.meta.env.BASE_URL || '/'}Prasanth S - Resume.pdf`.replace(/([^:]\/)\/{2,}/g, '$1/');
 
@@ -85,7 +85,7 @@ export default function HeroSection() {
           className="mt-10 flex items-center justify-center gap-6"
         >
           <GlassEffect
-            onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => scrollToTarget('projects', { offset: -96, duration: 1.1 })}
             className="rounded-3xl px-8 py-4 text-white font-display font-bold text-xs tracking-mega-wide uppercase hover:px-10 hover:rounded-4xl"
           >
             <div data-hover className="transition-all duration-700 hover:scale-95 text-shadow-glow">

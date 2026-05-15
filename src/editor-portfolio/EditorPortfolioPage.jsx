@@ -6,6 +6,7 @@ import EditorSpotlight from './EditorSpotlight';
 import EditorWork from './EditorWork';
 import { EditorTheCraft, EditorServices, EditorProcess, EditorAbout, EditorContact } from './EditorSections';
 import EditorFooter from './EditorFooter';
+import ScrollReveal from '@/components/portfolio/ScrollReveal';
 
 /**
  * Video editor / motion portfolio — isolated route and styles.
@@ -25,13 +26,27 @@ export default function EditorPortfolioPage() {
       <EditorNav />
       <main className="relative z-[1]">
         <EditorHero />
-        <EditorSpotlight />
-        <EditorTheCraft />
-        <EditorServices />
-        <EditorProcess />
-        <EditorWork />
-        <EditorAbout />
-        <EditorContact />
+        <ScrollReveal variant="slide-up" duration={0.9}>
+          <EditorSpotlight />
+        </ScrollReveal>
+        <ScrollReveal variant="slide-left" duration={0.9}>
+          <EditorTheCraft />
+        </ScrollReveal>
+        <ScrollReveal variant="scale" duration={0.85}>
+          <EditorServices />
+        </ScrollReveal>
+        <ScrollReveal variant="blur" duration={0.95}>
+          <EditorProcess />
+        </ScrollReveal>
+        <ScrollReveal variant="slide-up" duration={0.9}>
+          <EditorWork />
+        </ScrollReveal>
+        <ScrollReveal variant="slide-right" duration={0.9}>
+          <EditorAbout />
+        </ScrollReveal>
+        <ScrollReveal variant="fade" duration={0.85}>
+          <EditorContact />
+        </ScrollReveal>
       </main>
       <EditorFooter />
     </div>

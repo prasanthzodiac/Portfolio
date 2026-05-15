@@ -5,7 +5,7 @@ import { Mail, Github, Linkedin, Phone, X } from 'lucide-react';
 const actions = [
   { icon: Mail, label: 'Email', href: 'mailto:Prasanthzodiac@gmail.com', color: '#0088FF' },
   { icon: Github, label: 'GitHub', href: 'https://github.com/prasanthzodiac', color: '#BF5AF2' },
-  { icon: Linkedin, label: 'LinkedIn', href: 'https://linkedin.com/in/prasanthzodiac', color: '#0088FF' },
+  { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/prasanthzodiac/', color: '#0088FF' },
   { icon: Phone, label: 'Phone', href: 'tel:+919080478462', color: '#FF6B35' },
 ];
 

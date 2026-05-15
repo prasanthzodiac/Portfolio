@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import ScrambleText from '../components/portfolio/ScrambleText';
+import { scrollToTarget } from '@/lib/smooth-scroll';
 
 export default function EditorNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -84,8 +85,8 @@ export default function EditorNav() {
         <button
           key={link}
           onClick={() => {
-             const el = document.getElementById(link.toLowerCase().replace(' ', '-'));
-             if (el) el.scrollIntoView({ behavior: 'smooth' });
+            const id = link.toLowerCase().replace(' ', '-');
+            scrollToTarget(id, { offset: -100, duration: 1.1 });
           }}
           data-hover
           className="font-mono text-xs tracking-mega-wide uppercase text-slate-500 hover:text-[#E5A823] transition-colors flex items-center"

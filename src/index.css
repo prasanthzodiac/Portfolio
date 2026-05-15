@@ -25,7 +25,19 @@
   }
 
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
+  }
+
+  html.lenis {
+    height: auto;
+  }
+
+  html.lenis.lenis-smooth {
+    scroll-behavior: auto;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
   }
 
   body {

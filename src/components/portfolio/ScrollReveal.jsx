@@ -58,8 +58,9 @@ export default function ScrollReveal({
       className={className}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, amount: threshold }}
+      viewport={{ once, amount: threshold, margin: '0px 0px -8% 0px' }}
       variants={VARIANTS[variant] || VARIANTS['slide-up']}
+      style={{ willChange: 'transform, opacity' }}
       transition={{
         duration,
         delay,

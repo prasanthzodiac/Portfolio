@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Mail, Github, Linkedin, MapPin, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import * as THREE from 'three';
 
 const resumeHref = `${import.meta.env.BASE_URL || '/'}Prasanth S - Resume.pdf`.replace(/([^:]\/)\/{2,}/g, '$1/');
@@ -8,7 +8,7 @@ const resumeHref = `${import.meta.env.BASE_URL || '/'}Prasanth S - Resume.pdf`.r
 const CONTACTS = [
   { label: 'EMAIL', value: 'Prasanthzodiac@gmail.com', href: 'mailto:Prasanthzodiac@gmail.com' },
   { label: 'GITHUB', value: 'prasanthzodiac', href: 'https://github.com/prasanthzodiac' },
-  { label: 'LINKEDIN', value: 'Prasanth S', href: 'https://linkedin.com/in/prasanth-s-76b668285' },
+  { label: 'LINKEDIN', value: 'Prasanth S', href: 'https://www.linkedin.com/in/prasanthzodiac/' },
   { label: 'LOCATION', value: 'Coimbatore, TN, India', href: null },
 ];
 
