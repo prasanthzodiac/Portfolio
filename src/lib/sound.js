@@ -3,8 +3,14 @@ const BGM_SOURCES = {
   editor: 'dark.mp3',
 };
 
-const BGM_VOLUME = 0.6;
+const BGM_VOLUME = 0.6; // 60% target loudness (perceptual, not linear amplitude)
 const FADE_MS = 3000;
+
+/** Map 0–1 “percent” to gain so 60% feels ~60% as loud as max, not ~95%. */
+function bgmGainForLevel(level) {
+  const clamped = Math.max(0, Math.min(1, level));
+  return clamped === 0 ? 0 : Math.pow(clamped, 2);
+}
 
 function resolveBgmUrl(filename) {
   const base = import.meta.env.BASE_URL || '/';
@@ -14,7 +20,7 @@ function resolveBgmUrl(filename) {
 class SoundManager {
   constructor() {
     this.ctx = null;
-    this.bgmAudio = null;
+    this.bgmEntry = null;
     this.bgmFadeTimer = null;
     this.isMuted = true;
     this.currentTheme = 'dev';
@@ -42,15 +48,27 @@ class SoundManager {
     this.listeners.forEach((cb) => cb(this.isMuted));
   }
 
-  getBgmAudio(theme) {
+  getBgmEntry(theme) {
     if (!this.bgmCache[theme]) {
       const audio = new Audio(resolveBgmUrl(BGM_SOURCES[theme]));
       audio.loop = true;
       audio.preload = 'auto';
-      audio.volume = 0;
-      this.bgmCache[theme] = audio;
+      audio.volume = 1;
+      this.bgmCache[theme] = { audio, source: null, gain: null };
     }
     return this.bgmCache[theme];
+  }
+
+  ensureBgmGraph(entry) {
+    this.init();
+    if (!entry.source) {
+      entry.source = this.ctx.createMediaElementSource(entry.audio);
+      entry.gain = this.ctx.createGain();
+      entry.gain.gain.value = 0;
+      entry.source.connect(entry.gain);
+      entry.gain.connect(this.ctx.destination);
+    }
+    return entry;
   }
 
   setTheme(theme) {
@@ -189,16 +207,16 @@ class SoundManager {
     }
   }
 
-  fadeBgmVolume(audio, target, durationMs) {
+  fadeBgmGain(gainNode, targetGain, durationMs) {
     if (this.bgmFadeTimer) {
       clearInterval(this.bgmFadeTimer);
       this.bgmFadeTimer = null;
     }
 
-    const start = audio.volume;
-    const delta = target - start;
+    const start = gainNode.gain.value;
+    const delta = targetGain - start;
     if (Math.abs(delta) < 0.001) {
-      audio.volume = target;
+      gainNode.gain.value = targetGain;
       return;
     }
 
@@ -209,7 +227,7 @@ class SoundManager {
     this.bgmFadeTimer = setInterval(() => {
       step += 1;
       const progress = Math.min(step / steps, 1);
-      audio.volume = start + delta * progress;
+      gainNode.gain.value = start + delta * progress;
       if (progress >= 1) {
         clearInterval(this.bgmFadeTimer);
         this.bgmFadeTimer = null;
@@ -221,14 +239,16 @@ class SoundManager {
     this.stopBGM({ immediate: true });
     if (this.isMuted) return;
 
-    const audio = this.getBgmAudio(theme);
-    this.bgmAudio = audio;
+    this.init();
+    const entry = this.ensureBgmGraph(this.getBgmEntry(theme));
+    this.bgmEntry = entry;
 
-    const playPromise = audio.play();
+    entry.gain.gain.value = 0;
+    const playPromise = entry.audio.play();
     if (playPromise?.catch) {
       playPromise.catch(() => {});
     }
-    this.fadeBgmVolume(audio, BGM_VOLUME, FADE_MS);
+    this.fadeBgmGain(entry.gain, bgmGainForLevel(BGM_VOLUME), FADE_MS);
   }
 
   stopBGM({ immediate = false } = {}) {
@@ -237,15 +257,15 @@ class SoundManager {
       this.bgmFadeTimer = null;
     }
 
-    if (!this.bgmAudio) return;
+    if (!this.bgmEntry) return;
 
-    const audio = this.bgmAudio;
-    this.bgmAudio = null;
+    const entry = this.bgmEntry;
+    this.bgmEntry = null;
 
     const finalize = () => {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.volume = 0;
+      entry.gain.gain.value = 0;
+      entry.audio.pause();
+      entry.audio.currentTime = 0;
     };
 
     if (immediate) {
@@ -253,7 +273,7 @@ class SoundManager {
       return;
     }
 
-    this.fadeBgmVolume(audio, 0, 1000);
+    this.fadeBgmGain(entry.gain, 0, 1000);
     setTimeout(finalize, 1000);
   }
 }
